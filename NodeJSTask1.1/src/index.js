@@ -1,12 +1,12 @@
-const express = require('express');
-const pool = require('./db');
-const axios = require('axios');
+const express = require('express')
+const pool = require('./db')
+const axios = require('axios')
 
-require('dotenv').config();
-const app = express();
-app.use(express.json());
+require('dotenv').config()
+const app = express()
+app.use(express.json())
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 
 // Создание товара
 app.post('/products', async (req, res) => {
@@ -37,27 +37,26 @@ app.post('/stocks', async (req, res) => {
 })
 
 // Увеличение остатка
-app.put('/stocks/:id/increase', async (req, res) => {
+app.put('/stocks/:product_id/increase', async (req, res) => {
     const { product_id } = req.params
-    const { quantity} = req.body
+    const { quantity } = req.body
     try {
-        const stock = await pool.query('SELECT * FROM stocks WHERE id = $1', [product_id])
+        const stock = await pool.query('SELECT * FROM stocks WHERE product_id = $1', [product_id])
         if (stock.rows.length == 0) {
             return res.status(404).json({ error: 'Stock not found' })}
         const result = await pool.query(
-            `UPDATE stocks SET quantity_in_stock = quantity_in_stock + $1 WHERE id = $2 RETURNING *`,
+            `UPDATE stocks SET quantity_in_stock = quantity_in_stock + $1 WHERE product_id = $2 RETURNING *`,
             [quantity, product_id]
         )
-    /*   
-        // Отправка данных в сервис истории
-        await axios.post(`${HISTORY_SERVICE_URL}/actions`, {
+
+        // Отправка данных в сервис
+        await axios.post(`${process.env.historyServiceUrl}/actions`, {
             product_id: stock.rows[0].product_id,
             shop_id: stock.rows[0].shop_id,
-            action_type: 'increase_stock',
-            quantity,
-            previous_stock: stock.rows[0].quantity_in_stock,
-            current_stock: result.rows[0].quantity_in_stock
-        })*/
+            action: 'increase_stock',
+            quantity: quantity
+        })
+        
 
         res.status(200).json(result.rows[0])
     } catch (error) {
@@ -66,27 +65,25 @@ app.put('/stocks/:id/increase', async (req, res) => {
 })
 
 // Уменьшение остатка
-app.put('/stocks/:id/decrease', async (req, res) => {
+app.put('/stocks/:product_id/decrease', async (req, res) => {
     const { product_id } = req.params
     const { quantity } = req.body
     try {
-        const stock = await pool.query('SELECT * FROM stocks WHERE id = $1', [product_id])
+        const stock = await pool.query('SELECT * FROM stocks WHERE product_id = $1', [product_id])
         if (stock.rows.length == 0) {
             return res.status(404).json({ error: 'Stock not found' })}
         const result = await pool.query(
-            `UPDATE stocks SET quantity_in_stock = quantity_in_stock + $1 WHERE id = $2 RETURNING *`,
+            `UPDATE stocks SET quantity_in_stock = quantity_in_stock - $1 WHERE product_id = $2 RETURNING *`,
             [quantity, product_id]
         )
-    /*   
-        // Отправка данных в сервис истории
-        await axios.post(`${HISTORY_SERVICE_URL}/actions`, {
+
+        // Отправка данных в сервис
+        await axios.post(`${process.env.historyServiceUrl}/actions`, {
             product_id: stock.rows[0].product_id,
             shop_id: stock.rows[0].shop_id,
-            action_type: 'increase_stock',
-            quantity,
-            previous_stock: stock.rows[0].quantity_in_stock,
-            current_stock: result.rows[0].quantity_in_stock
-        })*/
+            action: 'decrease_stock',
+            quantity: quantity
+        })
 
         res.status(200).json(result.rows[0])
     } catch (error) {

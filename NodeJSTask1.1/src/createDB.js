@@ -1,16 +1,17 @@
 const { Pool } = require('pg')
+require('dotenv').config()
 
 const config = {
-    user: 'postgres',        
-    host: 'localhost',       
-    password: 'm1nl72oy1',    
-    port: 5432               
+    user: process.env.DBUser,        
+    host: process.env.DBHost,       
+    password: process.env.DBPassword,    
+    port: process.env.DBPort             
 }
 const pool = new Pool(config)
 
 async function createDatabase() {
     
-    let client;
+    let client
 
     try {
         
@@ -66,13 +67,9 @@ async function createDatabase() {
                 id SERIAL PRIMARY KEY,
                 product_id INT REFERENCES products(id) ON DELETE CASCADE,
                 shop_id INT REFERENCES shops(id) ON DELETE CASCADE,
-                action_type VARCHAR(255) NOT NULL,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                quantity INT,
-                previous_stock INT,
-                current_stock INT,
-                previous_order INT,
-                current_order INT
+                action VARCHAR(255) NOT NULL,
+                quantity INT NOT NULL CHECK (quantity >= 0),
+                date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `)
         await client.end()
