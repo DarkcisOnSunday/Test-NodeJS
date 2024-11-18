@@ -1,0 +1,32 @@
+{
+  "name": "node-js",
+  "version": "1.0.0",
+  "main": "test.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js",
+    "createDB": "node ./src/createDB.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DarkcisOnSunday/git init.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DarkcisOnSunday/Test-NodeJS/issues"
+  },
+  "homepage": "https://github.com/DarkcisOnSunday/Test-NodeJS#readme",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
